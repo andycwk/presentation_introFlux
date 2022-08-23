@@ -9,3 +9,7 @@ flux bootstrap github \
   --personal
 
    watch flux get all -A
+
+add - ../../../services/local-dev into kustomization.yaml
+
+kustomize build clusters/local-dev 
