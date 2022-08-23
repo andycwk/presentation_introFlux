@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world
+spec:
+  replicas: 3
+  minReadySeconds: 10
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      imagePullSecrets:
+        - name: registrypullsecret
+      containers:
+        - name: hello-world
+          image: nimblecontainers.azurecr.io/e-hub/ci-idea.api:latest
+          imagePullPolicy: IfNotPresent
+          env: 
+            - name: EHUB_DB_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: read-only
+            - name: EHUB_SCHEMA_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: schema-updates                  
+          envFrom:
+            - configMapRef:
+                name: ci-idea-configmap
